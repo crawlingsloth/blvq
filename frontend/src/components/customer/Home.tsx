@@ -30,6 +30,18 @@ export default function Home() {
       setScanError(null)
       setIsScanning(true)
 
+      // Request camera permission explicitly first
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment' }
+        })
+        // Permission granted, stop the test stream
+        stream.getTracks().forEach(track => track.stop())
+      } catch (permError: any) {
+        // Permission denied or error
+        throw permError
+      }
+
       const scanner = new Html5Qrcode('qr-reader')
       scannerRef.current = scanner
 
