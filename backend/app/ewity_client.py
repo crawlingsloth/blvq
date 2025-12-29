@@ -143,15 +143,17 @@ class EwityClient:
             while page <= total_pages:
                 print(f"  Fetching page {page}...")
 
-                # Fetch customers page by page
-                data = await self._get("/customers", params={"page": page, "pageSize": 100})
+                # Fetch customers page by page (API always returns 20 per page regardless of pageSize)
+                data = await self._get("/customers", params={"page": page})
                 customers = data.get("data", [])
                 pagination = data.get("pagination", {})
 
                 # Update total pages from first response
                 if page == 1:
-                    total_pages = pagination.get("totalPages", 1)
-                    print(f"  Found {total_pages} pages to sync")
+                    # API uses 'lastPage' not 'totalPages'
+                    total_pages = pagination.get("lastPage", 1)
+                    total_customers = pagination.get("total", 0)
+                    print(f"  Found {total_pages} pages ({total_customers} total customers)")
 
                 # Process customers from this page
                 for customer_data in customers:
