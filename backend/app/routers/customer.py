@@ -32,23 +32,45 @@ async def get_customer_balance(uuid: str, db: Session = Depends(get_db)):
     db.commit()
 
     # Fetch FRESH customer data directly from Ewity API (bypass database cache)
-    # This ensures balance is always up-to-date after purchases
+    # Search through pages to find the customer
+    customer_data = None
     try:
-        data = await ewity_client._get("/customers", params={"page": 1})
-        customers = data.get("data", [])
+        # Try up to 3 pages (60 customers) for recent customers
+        for page in range(1, 4):
+            data = await ewity_client._get("/customers", params={"page": page})
+            customers = data.get("data", [])
 
-        customer_data = None
-        for c in customers:
-            if c.get("id") == link.ewity_customer_id:
-                customer_data = c
+            for c in customers:
+                if c.get("id") == link.ewity_customer_id:
+                    customer_data = c
+                    print(f"Found customer {link.ewity_customer_id} on page {page}")
+                    break
+
+            if customer_data:
                 break
 
-        # If not on first page, check database as fallback
+        # If still not found, search remaining pages
         if not customer_data:
-            customer_data = await ewity_client.get_customer(link.ewity_customer_id, db)
+            print(f"Customer {link.ewity_customer_id} not in first 3 pages, searching all...")
+            for page in range(4, 14):  # Search remaining pages
+                data = await ewity_client._get("/customers", params={"page": page})
+                customers = data.get("data", [])
+
+                for c in customers:
+                    if c.get("id") == link.ewity_customer_id:
+                        customer_data = c
+                        print(f"Found customer {link.ewity_customer_id} on page {page}")
+                        break
+
+                if customer_data:
+                    break
+
     except Exception as e:
         print(f"Error fetching fresh data: {e}")
-        # Fallback to database
+
+    # Final fallback to database if API search fails
+    if not customer_data:
+        print(f"Could not find in API, using database cache")
         customer_data = await ewity_client.get_customer(link.ewity_customer_id, db)
 
     if not customer_data:
