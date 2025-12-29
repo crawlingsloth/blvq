@@ -1,0 +1,40 @@
+{
+  "base_url": "https://api.ewitypos.com/v1",
+  "authentication": "Bearer token",
+  "available_endpoints": {
+    "customers": {
+      "url": "/v1/customers",
+      "sample_response": "{\"pagination\":{\"total\":241,\"pageSize\":20,\"current\":1,\"lastPage\":13},\"data\":[{\"id\":1517829,\"company_name\":null,\"name\":\"steelu ibbe\",\"address\":null,\"email\":null,\"mobile\":\"0090909\",\"birthday\":null,\"passport\":null,\"bill_note\":null,\"price_level\":null,\"tax_number\":null,\"note\":null,\"credit_limit\":500,\"total_outstanding\":0,\"total_spent\":214,\"loyalty_points\":null,\"loyalty_text\":\"No Loyalty\",\"loyalty_text_extra\":null,\"loyalty_program\":null,\"created_unix\":1766627737},{\"id\":1516072,\"company_name\":null,\"name",
+      "data_structure": [
+        "pagination",
+        "data",
+        "search"
+      ]
+    },
+    "users": {
+      "url": "/v1/users",
+      "sample_response": "{\"pagination\":{\"total\":2,\"pageSize\":20,\"current\":1,\"lastPage\":1},\"data\":[{\"id\":35697,\"username\":\"diehardofdeath\",\"type\":\"api\",\"name\":\"Naanu\",\"email\":\"eshanshafeeq073055@gmail.com\",\"mobile\":null,\"created\":{\"at\":\"2025-12-28 16:21:14\",\"by\":\"Ahusan\"}},{\"id\":32835,\"username\":\"latheef\",\"type\":\"default\",\"name\":\"Ahusan\",\"email\":\"ahusanlatheef@gmail.com\",\"mobile\":\"7709950\",\"created\":{\"at\":\"2025-07-31 15:24:38\",\"by\":null}}],\"search\":{\"default\":\"name\",\"searches\":{\"name\":{\"name\":\"Name\"},\"username\":{\"name\":\"",
+      "data_structure": [
+        "pagination",
+        "data",
+        "search"
+      ]
+    },
+    "employees": {
+      "url": "/v1/employees",
+      "sample_response": "{\"pagination\":{\"total\":0,\"pageSize\":20,\"current\":1,\"lastPage\":1},\"data\":[]}",
+      "data_structure": [
+        "pagination",
+        "data"
+      ]
+    },
+    "locations": {
+      "url": "/v1/locations",
+      "sample_response": "{\"data\":[{\"id\":9897,\"name\":\"BLVQ\",\"display_name\":null,\"type\":\"retail\",\"tax_number\":null,\"tax_activity_number\":null,\"street_address\":null,\"city\":null,\"country\":null,\"phone\":null,\"bill_note\":\"\",\"price_level\":null,\"qr_menu_url\":null}],\"search\":{\"searches\":[]}}",
+      "data_structure": [
+        "data",
+        "search"
+      ]
+    }
+  }
+}

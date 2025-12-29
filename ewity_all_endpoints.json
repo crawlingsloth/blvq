@@ -1,0 +1,15 @@
+{
+  "base_url": "https://api.ewitypos.com/v1",
+  "found_endpoints": [
+    {
+      "endpoint": "expenses",
+      "url": "/v1/expenses",
+      "response_preview": "{\"pagination\":{\"total\":9,\"pageSize\":20,\"current\":1,\"lastPage\":1},\"data\":[{\"id\":47789,\"category\":{\"id\":26698,\"name\":\"Rent\",\"created\":{\"at\":\"2025-07-31 15:24:38\",\"by\":\"Ahusan\"},\"updated\":{\"at\":\"2025-07-31 15:24:38\",\"by\":\"Ahusan\"}},\"description\":\"October\",\"amount\":\"2500.00\",\"amount_text\":\"MVR 2,500.00\",\"date\":\"01-Nov-2025\",\"created\":{\"at\":\"2025-11-01 20:53:40\",\"by\":\"Ahusan\"},\"updated\":{\"at\":\"2025-11-01 20:53:40\",\"by\":\"Ahusan\"}},{\"id\":47794,\"category\":{\"id\":26698,\"name\":\"Rent\",\"created\":{\"at\":\"2025-"
+    },
+    {
+      "endpoint": "tags",
+      "url": "/v1/tags",
+      "response_preview": "{\"data\":[]}"
+    }
+  ]
+}

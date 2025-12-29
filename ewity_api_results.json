@@ -1,0 +1,118 @@
+{
+  "base_url": "https://api.ewitypos.com",
+  "auth_header": {
+    "Authorization": "***"
+  },
+  "successful_endpoints": [],
+  "unauthorized_endpoints": [],
+  "not_found_endpoints": [
+    {
+      "endpoint": "/me",
+      "status": 404
+    },
+    {
+      "endpoint": "/user",
+      "status": 404
+    },
+    {
+      "endpoint": "/auth/user",
+      "status": 404
+    },
+    {
+      "endpoint": "/profile",
+      "status": 404
+    },
+    {
+      "endpoint": "/info",
+      "status": 404
+    },
+    {
+      "endpoint": "/status",
+      "status": 404
+    },
+    {
+      "endpoint": "/health",
+      "status": 404
+    },
+    {
+      "endpoint": "/sales",
+      "status": 404
+    },
+    {
+      "endpoint": "/orders",
+      "status": 404
+    },
+    {
+      "endpoint": "/transactions",
+      "status": 404
+    },
+    {
+      "endpoint": "/invoices",
+      "status": 404
+    },
+    {
+      "endpoint": "/receipts",
+      "status": 404
+    },
+    {
+      "endpoint": "/products",
+      "status": 404
+    },
+    {
+      "endpoint": "/items",
+      "status": 404
+    },
+    {
+      "endpoint": "/inventory",
+      "status": 404
+    },
+    {
+      "endpoint": "/stock",
+      "status": 404
+    },
+    {
+      "endpoint": "/categories",
+      "status": 404
+    },
+    {
+      "endpoint": "/customers",
+      "status": 404
+    },
+    {
+      "endpoint": "/clients",
+      "status": 404
+    },
+    {
+      "endpoint": "/reports",
+      "status": 404
+    },
+    {
+      "endpoint": "/analytics",
+      "status": 404
+    },
+    {
+      "endpoint": "/dashboard",
+      "status": 404
+    },
+    {
+      "endpoint": "/suppliers",
+      "status": 404
+    },
+    {
+      "endpoint": "/users",
+      "status": 404
+    },
+    {
+      "endpoint": "/stores",
+      "status": 404
+    },
+    {
+      "endpoint": "/branches",
+      "status": 404
+    },
+    {
+      "endpoint": "/settings",
+      "status": 404
+    }
+  ]
+}
