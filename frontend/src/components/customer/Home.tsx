@@ -61,9 +61,8 @@ export default function Home() {
             navigate(`/balance/${uuid}`)
           })
         },
-        (error) => {
+        () => {
           // Ignore scanning errors (just means no QR code in frame)
-          // console.log('Scan error:', error)
         }
       )
     } catch (error) {
