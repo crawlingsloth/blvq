@@ -125,7 +125,7 @@ When you push updates to GitHub Pages:
 ### Backend (.env)
 
 ```bash
-EWITY_API_TOKEN=uat_DuVb2afCHOpEAoihxCCnQWGBcWEF
+EWITY_API_TOKEN=<EWITTY API TOKEN>
 EWITY_API_BASE_URL=https://api.ewitypos.com/v1
 DATABASE_URL=sqlite:///./blvq.db
 SECRET_KEY=your-secret-key-change-in-production
