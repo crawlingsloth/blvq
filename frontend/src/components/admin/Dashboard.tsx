@@ -50,9 +50,31 @@ export default function AdminDashboard() {
     },
   })
 
+  // Refresh customer data mutation
+  const refreshMutation = useMutation({
+    mutationFn: () => api.refreshCustomerData(),
+    onSuccess: (result) => {
+      if (result.success) {
+        queryClient.invalidateQueries({ queryKey: ['searchCustomers'] })
+        alert(`✓ Synced ${result.total} customers (${result.new} new, ${result.updated} updated)`)
+      } else {
+        alert(`Error: ${result.error}`)
+      }
+    },
+    onError: (error: Error) => {
+      alert(`Error: ${error.message}`)
+    },
+  })
+
   const handleLogout = () => {
     api.logout()
     navigate('/admin/login')
+  }
+
+  const handleRefresh = () => {
+    if (confirm('Refresh customer data from Ewity? This may take a few seconds.')) {
+      refreshMutation.mutate()
+    }
   }
 
   const handleLinkCustomer = () => {
@@ -83,12 +105,21 @@ export default function AdminDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-gray-800">BLVQ Admin</h1>
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
-            >
-              Logout
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={handleRefresh}
+                disabled={refreshMutation.isPending}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {refreshMutation.isPending ? 'Refreshing...' : 'Refresh Data'}
+              </button>
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+              >
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       </div>

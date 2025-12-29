@@ -101,6 +101,19 @@ class ApiClient {
     })
   }
 
+  async refreshCustomerData(): Promise<{
+    success: boolean
+    total?: number
+    new?: number
+    updated?: number
+    error?: string
+  }> {
+    return this.request('/api/admin/customers/refresh', {
+      method: 'POST',
+      headers: this.getAuthHeader(),
+    })
+  }
+
   // Customer endpoints (public)
   async getCustomerBalance(uuid: string): Promise<CustomerBalance> {
     return this.request(`/api/customer/${uuid}`)

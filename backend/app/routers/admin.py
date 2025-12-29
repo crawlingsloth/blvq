@@ -55,7 +55,8 @@ async def login(credentials: AdminLogin, db: Session = Depends(get_db)):
 async def search_customers(
     q: str,
     page: int = 1,
-    current_user: User = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user),
+    db: Session = Depends(get_db)
 ):
     """Search Ewity customers by name or phone"""
     if len(q) < 2:
@@ -64,7 +65,7 @@ async def search_customers(
             detail="Query must be at least 2 characters"
         )
 
-    result = await ewity_client.search_customers(q, page)
+    result = await ewity_client.search_customers(q, page, db)
     return result
 
 
@@ -140,3 +141,13 @@ async def delete_customer_link(
     db.commit()
 
     return {"message": "Link deleted successfully"}
+
+
+@router.post("/customers/refresh")
+async def refresh_customer_data(
+    current_user: User = Depends(get_current_admin_user),
+    db: Session = Depends(get_db)
+):
+    """Manually trigger refresh of customer data from Ewity API"""
+    result = await ewity_client.sync_all_customers_to_db(db)
+    return result

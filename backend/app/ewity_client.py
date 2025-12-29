@@ -1,6 +1,9 @@
 """Ewity API client with caching"""
 import httpx
+import json
+from datetime import datetime
 from typing import Optional, List, Dict, Any
+from sqlalchemy.orm import Session
 from .config import get_settings
 from .cache import cache
 
@@ -54,35 +57,55 @@ class EwityClient:
             print(f"Error fetching customer {customer_id}: {e}")
             return None
 
-    async def search_customers(self, query: str, page: int = 1) -> Dict[str, Any]:
-        """Search customers by name or phone"""
-        cache_key = f"search:{query}:{page}"
-
-        # Check cache
-        cached = cache.get(cache_key)
-        if cached:
-            return cached
+    async def search_customers(self, query: str, page: int = 1, db: Optional[Session] = None) -> Dict[str, Any]:
+        """Search customers by name or phone from local database"""
+        from .models import Customer
 
         try:
-            # Fetch customers and filter locally
-            # Note: Ewity API might not have search, so we fetch and filter
-            data = await self._get("/customers", params={"page": page, "pageSize": 50})
+            if not db:
+                print("Warning: No database session provided for search")
+                return {"data": [], "pagination": {}}
 
-            # Filter results by query (name or mobile)
+            # Search in local database
             query_lower = query.lower()
-            customers = data.get("data", [])
-            filtered = [
-                c for c in customers
-                if (c.get("name") and query_lower in c.get("name", "").lower()) or
-                   (c.get("mobile") and query in c.get("mobile", ""))
-            ]
+
+            # Use SQLAlchemy to search
+            results = db.query(Customer).filter(
+                (Customer.name.ilike(f"%{query}%")) |
+                (Customer.mobile.like(f"%{query}%"))
+            ).all()
+
+            # Convert to dict format
+            filtered = []
+            for customer in results:
+                customer_dict = {
+                    "id": customer.id,
+                    "name": customer.name,
+                    "mobile": customer.mobile,
+                    "email": customer.email,
+                    "address": customer.address,
+                    "creditLimit": customer.credit_limit,
+                    "totalSpent": customer.total_spent,
+                    "outstandingBalance": customer.outstanding_balance
+                }
+                filtered.append(customer_dict)
+
+            # Paginate the filtered results
+            page_size = 20
+            start_idx = (page - 1) * page_size
+            end_idx = start_idx + page_size
+            paginated_filtered = filtered[start_idx:end_idx]
 
             result = {
-                "data": filtered,
-                "pagination": data.get("pagination", {})
+                "data": paginated_filtered,
+                "pagination": {
+                    "total": len(filtered),
+                    "page": page,
+                    "pageSize": page_size,
+                    "totalPages": (len(filtered) + page_size - 1) // page_size
+                }
             }
 
-            cache.set(cache_key, result)
             return result
         except Exception as e:
             print(f"Error searching customers: {e}")
@@ -103,6 +126,65 @@ class EwityClient:
         except Exception as e:
             print(f"Error fetching customers: {e}")
             return {"data": [], "pagination": {}}
+
+    async def sync_all_customers_to_db(self, db: Session) -> Dict[str, Any]:
+        """Fetch all customers from Ewity and sync to local database"""
+        from .models import Customer
+
+        try:
+            print("🔄 Syncing customers from Ewity API...")
+
+            # Fetch all customers with large page size
+            data = await self._get("/customers", params={"page": 1, "pageSize": 1000})
+            customers = data.get("data", [])
+
+            synced_count = 0
+            updated_count = 0
+
+            for customer_data in customers:
+                customer_id = customer_data.get("id")
+                if not customer_id:
+                    continue
+
+                # Check if customer exists
+                existing = db.query(Customer).filter(Customer.id == customer_id).first()
+
+                customer_obj = existing or Customer(id=customer_id)
+                customer_obj.name = customer_data.get("name")
+                customer_obj.mobile = customer_data.get("mobile")
+                customer_obj.email = customer_data.get("email")
+                customer_obj.address = customer_data.get("address")
+                customer_obj.credit_limit = customer_data.get("creditLimit")
+                customer_obj.total_spent = customer_data.get("totalSpent")
+                customer_obj.outstanding_balance = customer_data.get("outstandingBalance")
+                customer_obj.data = json.dumps(customer_data)
+                customer_obj.synced_at = datetime.utcnow()
+
+                if existing:
+                    updated_count += 1
+                else:
+                    db.add(customer_obj)
+                    synced_count += 1
+
+            db.commit()
+
+            total = synced_count + updated_count
+            print(f"✓ Synced {total} customers ({synced_count} new, {updated_count} updated)")
+
+            return {
+                "success": True,
+                "total": total,
+                "new": synced_count,
+                "updated": updated_count
+            }
+
+        except Exception as e:
+            print(f"❌ Error syncing customers: {e}")
+            db.rollback()
+            return {
+                "success": False,
+                "error": str(e)
+            }
 
 
 # Global client instance

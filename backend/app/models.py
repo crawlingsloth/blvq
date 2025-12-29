@@ -1,7 +1,7 @@
 """SQLAlchemy database models"""
 import uuid
 from datetime import datetime
-from sqlalchemy import Column, String, DateTime, ForeignKey, Integer
+from sqlalchemy import Column, String, DateTime, ForeignKey, Integer, Float, Text
 from sqlalchemy.orm import relationship
 from .database import Base
 
@@ -37,3 +37,22 @@ class CustomerLink(Base):
 
     # Relationships
     created_by_user = relationship("User", back_populates="customer_links")
+
+
+class Customer(Base):
+    """Local cache of Ewity customer data"""
+    __tablename__ = "customers"
+
+    id = Column(Integer, primary_key=True)  # Ewity customer ID
+    name = Column(String, nullable=True, index=True)
+    mobile = Column(String, nullable=True, index=True)
+    email = Column(String, nullable=True)
+    address = Column(Text, nullable=True)
+    credit_limit = Column(Float, nullable=True)
+    total_spent = Column(Float, nullable=True)
+    outstanding_balance = Column(Float, nullable=True)
+    data = Column(Text, nullable=True)  # JSON string of full customer data
+    synced_at = Column(DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f"<Customer(id={self.id}, name={self.name})>"

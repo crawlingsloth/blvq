@@ -17,9 +17,9 @@ async def lifespan(app: FastAPI):
     # Create database tables
     Base.metadata.create_all(bind=engine)
 
-    # Create default admin user if none exists
     db = SessionLocal()
     try:
+        # Create default admin user if none exists
         admin_user = db.query(User).filter(User.role == "admin").first()
         if not admin_user:
             default_admin = User(
@@ -31,6 +31,18 @@ async def lifespan(app: FastAPI):
             db.commit()
             print(f"✓ Created default admin user: {settings.admin_username}")
             print(f"  Change password in production via .env!")
+
+        # Sync customers from Ewity on first start (if customers table is empty)
+        from .models import Customer
+        from .ewity_client import ewity_client
+
+        customer_count = db.query(Customer).count()
+        if customer_count == 0:
+            print("📥 No customers in local database. Syncing from Ewity...")
+            await ewity_client.sync_all_customers_to_db(db)
+        else:
+            print(f"✓ Found {customer_count} customers in local database")
+
     finally:
         db.close()
 
