@@ -134,39 +134,56 @@ class EwityClient:
         try:
             print("🔄 Syncing customers from Ewity API...")
 
-            # Fetch all customers with large page size
-            data = await self._get("/customers", params={"page": 1, "pageSize": 1000})
-            customers = data.get("data", [])
-
             synced_count = 0
             updated_count = 0
+            page = 1
+            total_pages = 1
 
-            for customer_data in customers:
-                customer_id = customer_data.get("id")
-                if not customer_id:
-                    continue
+            # Fetch all pages
+            while page <= total_pages:
+                print(f"  Fetching page {page}...")
 
-                # Check if customer exists
-                existing = db.query(Customer).filter(Customer.id == customer_id).first()
+                # Fetch customers page by page
+                data = await self._get("/customers", params={"page": page, "pageSize": 100})
+                customers = data.get("data", [])
+                pagination = data.get("pagination", {})
 
-                customer_obj = existing or Customer(id=customer_id)
-                customer_obj.name = customer_data.get("name")
-                customer_obj.mobile = customer_data.get("mobile")
-                customer_obj.email = customer_data.get("email")
-                customer_obj.address = customer_data.get("address")
-                customer_obj.credit_limit = customer_data.get("creditLimit")
-                customer_obj.total_spent = customer_data.get("totalSpent")
-                customer_obj.outstanding_balance = customer_data.get("outstandingBalance")
-                customer_obj.data = json.dumps(customer_data)
-                customer_obj.synced_at = datetime.utcnow()
+                # Update total pages from first response
+                if page == 1:
+                    total_pages = pagination.get("totalPages", 1)
+                    print(f"  Found {total_pages} pages to sync")
 
-                if existing:
-                    updated_count += 1
-                else:
-                    db.add(customer_obj)
-                    synced_count += 1
+                # Process customers from this page
+                for customer_data in customers:
+                    customer_id = customer_data.get("id")
+                    if not customer_id:
+                        continue
 
-            db.commit()
+                    # Check if customer exists
+                    existing = db.query(Customer).filter(Customer.id == customer_id).first()
+
+                    customer_obj = existing or Customer(id=customer_id)
+                    customer_obj.name = customer_data.get("name")
+                    customer_obj.mobile = customer_data.get("mobile")
+                    customer_obj.email = customer_data.get("email")
+                    customer_obj.address = customer_data.get("address")
+                    customer_obj.credit_limit = customer_data.get("creditLimit")
+                    customer_obj.total_spent = customer_data.get("totalSpent")
+                    customer_obj.outstanding_balance = customer_data.get("outstandingBalance")
+                    customer_obj.data = json.dumps(customer_data)
+                    customer_obj.synced_at = datetime.utcnow()
+
+                    if existing:
+                        updated_count += 1
+                    else:
+                        db.add(customer_obj)
+                        synced_count += 1
+
+                # Commit after each page to avoid memory issues
+                db.commit()
+                print(f"  ✓ Processed page {page}/{total_pages}")
+
+                page += 1
 
             total = synced_count + updated_count
             print(f"✓ Synced {total} customers ({synced_count} new, {updated_count} updated)")
