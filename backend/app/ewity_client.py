@@ -29,30 +29,61 @@ class EwityClient:
             response.raise_for_status()
             return response.json()
 
-    async def get_customer(self, customer_id: int) -> Optional[Dict[str, Any]]:
-        """Get customer by ID with caching"""
-        cache_key = f"customer:{customer_id}"
+    async def get_customer(self, customer_id: int, db: Optional[Session] = None) -> Optional[Dict[str, Any]]:
+        """Get customer by ID from local database, fallback to API if needed"""
+        from .models import Customer
 
-        # Check cache first
-        cached = cache.get(cache_key)
-        if cached:
-            return cached
-
-        # Fetch all customers and find the one we want
-        # Note: Ewity doesn't have a single customer endpoint, so we need to search
         try:
-            data = await self._get("/customers", params={"pageSize": 100})
+            if not db:
+                print("Warning: No database session provided for get_customer")
+                return None
+
+            # Check local database first
+            customer = db.query(Customer).filter(Customer.id == customer_id).first()
+
+            if customer:
+                # Return customer data from local database
+                return {
+                    "id": customer.id,
+                    "name": customer.name,
+                    "mobile": customer.mobile,
+                    "email": customer.email,
+                    "address": customer.address,
+                    "credit_limit": customer.credit_limit,
+                    "creditLimit": customer.credit_limit,  # API uses camelCase
+                    "total_outstanding": customer.outstanding_balance,
+                    "total_spent": customer.total_spent,
+                    "outstandingBalance": customer.outstanding_balance,  # API uses camelCase
+                    "totalSpent": customer.total_spent,  # API uses camelCase
+                    "loyalty_text": None,  # Not stored in local DB
+                }
+
+            # If not in local database, fetch from API and cache it
+            print(f"Customer {customer_id} not in local DB, fetching from API...")
+            data = await self._get("/customers", params={"page": 1})
             customers = data.get("data", [])
 
-            # Search through customers
-            for customer in customers:
-                if customer.get("id") == customer_id:
-                    cache.set(cache_key, customer)
-                    return customer
+            for customer_data in customers:
+                if customer_data.get("id") == customer_id:
+                    # Store in database for future use
+                    new_customer = Customer(
+                        id=customer_id,
+                        name=customer_data.get("name"),
+                        mobile=customer_data.get("mobile"),
+                        email=customer_data.get("email"),
+                        address=customer_data.get("address"),
+                        credit_limit=customer_data.get("creditLimit"),
+                        total_spent=customer_data.get("totalSpent"),
+                        outstanding_balance=customer_data.get("outstandingBalance"),
+                        data=json.dumps(customer_data),
+                        synced_at=datetime.utcnow()
+                    )
+                    db.add(new_customer)
+                    db.commit()
+                    return customer_data
 
-            # If not found in first page, we might need pagination
-            # For now, return None
             return None
+
         except Exception as e:
             print(f"Error fetching customer {customer_id}: {e}")
             return None

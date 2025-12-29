@@ -31,8 +31,8 @@ async def get_customer_balance(uuid: str, db: Session = Depends(get_db)):
     link.last_accessed = datetime.utcnow()
     db.commit()
 
-    # Fetch customer data from Ewity
-    customer_data = await ewity_client.get_customer(link.ewity_customer_id)
+    # Fetch customer data from local database (or Ewity API as fallback)
+    customer_data = await ewity_client.get_customer(link.ewity_customer_id, db)
 
     if not customer_data:
         raise HTTPException(
