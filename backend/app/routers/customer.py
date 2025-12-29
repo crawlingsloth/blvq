@@ -32,38 +32,49 @@ async def get_customer_balance(uuid: str, db: Session = Depends(get_db)):
     db.commit()
 
     # Fetch FRESH customer data directly from Ewity API (bypass database cache)
-    # Search through pages to find the customer
+    # Use cached page number for faster lookup
     customer_data = None
+    found_page = None
+
     try:
-        # Try up to 3 pages (60 customers) for recent customers
-        for page in range(1, 4):
-            data = await ewity_client._get("/customers", params={"page": page})
+        # If we have a cached page number, check that page first
+        if link.last_api_page:
+            print(f"Checking cached page {link.last_api_page} for customer {link.ewity_customer_id}")
+            data = await ewity_client._get("/customers", params={"page": link.last_api_page})
             customers = data.get("data", [])
 
             for c in customers:
                 if c.get("id") == link.ewity_customer_id:
                     customer_data = c
-                    print(f"Found customer {link.ewity_customer_id} on page {page}")
+                    found_page = link.last_api_page
+                    print(f"✓ Found on cached page {found_page}")
                     break
 
-            if customer_data:
-                break
-
-        # If still not found, search remaining pages
+        # If not found on cached page, search all pages
         if not customer_data:
-            print(f"Customer {link.ewity_customer_id} not in first 3 pages, searching all...")
-            for page in range(4, 14):  # Search remaining pages
+            print(f"Customer not on cached page, searching all pages...")
+            for page in range(1, 14):
+                # Skip the cached page since we already checked it
+                if page == link.last_api_page:
+                    continue
+
                 data = await ewity_client._get("/customers", params={"page": page})
                 customers = data.get("data", [])
 
                 for c in customers:
                     if c.get("id") == link.ewity_customer_id:
                         customer_data = c
-                        print(f"Found customer {link.ewity_customer_id} on page {page}")
+                        found_page = page
+                        print(f"✓ Found customer on page {page}")
                         break
 
                 if customer_data:
                     break
+
+        # Update cached page number if found
+        if found_page and found_page != link.last_api_page:
+            link.last_api_page = found_page
+            print(f"Updated cached page to {found_page}")
 
     except Exception as e:
         print(f"Error fetching fresh data: {e}")

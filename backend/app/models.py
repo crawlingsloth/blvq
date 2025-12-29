@@ -34,6 +34,7 @@ class CustomerLink(Base):
     created_by = Column(String, ForeignKey("users.id"), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     last_accessed = Column(DateTime, default=datetime.utcnow)
+    last_api_page = Column(Integer, nullable=True)  # Cache page number for faster lookups
 
     # Relationships
     created_by_user = relationship("User", back_populates="customer_links")
