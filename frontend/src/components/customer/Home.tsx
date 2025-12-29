@@ -1,6 +1,17 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
 
 export default function Home() {
+  const navigate = useNavigate()
+
+  // Redirect to saved balance page if exists (for PWA)
+  useEffect(() => {
+    const savedUuid = localStorage.getItem('lastBalanceUuid')
+    if (savedUuid) {
+      navigate(`/balance/${savedUuid}`, { replace: true })
+    }
+  }, [navigate])
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center px-4">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8">

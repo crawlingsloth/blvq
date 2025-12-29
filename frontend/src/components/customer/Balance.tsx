@@ -1,10 +1,18 @@
 import { useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
+import { useEffect } from 'react'
 import { api } from '../../lib/api'
 import { formatCurrency, formatDate } from '../../lib/utils'
 
 export default function Balance() {
   const { uuid } = useParams<{ uuid: string }>()
+
+  // Save UUID to localStorage when component mounts (for PWA start_url)
+  useEffect(() => {
+    if (uuid) {
+      localStorage.setItem('lastBalanceUuid', uuid)
+    }
+  }, [uuid])
 
   const { data: balance, isLoading, error } = useQuery({
     queryKey: ['balance', uuid],
