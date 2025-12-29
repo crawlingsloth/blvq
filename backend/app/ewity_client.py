@@ -72,9 +72,9 @@ class EwityClient:
                         mobile=customer_data.get("mobile"),
                         email=customer_data.get("email"),
                         address=customer_data.get("address"),
-                        credit_limit=customer_data.get("creditLimit"),
-                        total_spent=customer_data.get("totalSpent"),
-                        outstanding_balance=customer_data.get("outstandingBalance"),
+                        credit_limit=customer_data.get("credit_limit"),  # API uses snake_case
+                        total_spent=customer_data.get("total_spent"),  # API uses snake_case
+                        outstanding_balance=customer_data.get("total_outstanding"),  # API uses snake_case
                         data=json.dumps(customer_data),
                         synced_at=datetime.utcnow()
                     )
@@ -200,9 +200,9 @@ class EwityClient:
                     customer_obj.mobile = customer_data.get("mobile")
                     customer_obj.email = customer_data.get("email")
                     customer_obj.address = customer_data.get("address")
-                    customer_obj.credit_limit = customer_data.get("creditLimit")
-                    customer_obj.total_spent = customer_data.get("totalSpent")
-                    customer_obj.outstanding_balance = customer_data.get("outstandingBalance")
+                    customer_obj.credit_limit = customer_data.get("credit_limit")  # API uses snake_case
+                    customer_obj.total_spent = customer_data.get("total_spent")  # API uses snake_case
+                    customer_obj.outstanding_balance = customer_data.get("total_outstanding")  # API uses snake_case
                     customer_obj.data = json.dumps(customer_data)
                     customer_obj.synced_at = datetime.utcnow()
 
