@@ -1,17 +1,24 @@
 import { useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { api } from '../../lib/api'
 import { formatCurrency, formatDate } from '../../lib/utils'
 
 export default function Balance() {
   const { uuid } = useParams<{ uuid: string }>()
+  const [isStandalone, setIsStandalone] = useState(false)
 
   // Save UUID to localStorage when component mounts (for PWA start_url)
   useEffect(() => {
     if (uuid) {
       localStorage.setItem('lastBalanceUuid', uuid)
     }
+
+    // Check if app is already installed (running in standalone mode)
+    const standalone = window.matchMedia('(display-mode: standalone)').matches ||
+                      (window.navigator as any).standalone ||
+                      document.referrer.includes('android-app://')
+    setIsStandalone(standalone)
   }, [uuid])
 
   const { data: balance, isLoading, error } = useQuery({
@@ -138,12 +145,14 @@ export default function Balance() {
           )}
         </div>
 
-        {/* Install Prompt */}
-        <div className="mt-6 text-center">
-          <p className="text-white text-sm">
-            Add this page to your home screen for quick access
-          </p>
-        </div>
+        {/* Install Prompt - Only show if not already installed */}
+        {!isStandalone && (
+          <div className="mt-6 text-center">
+            <p className="text-white text-sm">
+              💡 Add this page to your home screen for quick access
+            </p>
+          </div>
+        )}
       </div>
     </div>
   )
