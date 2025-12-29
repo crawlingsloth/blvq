@@ -21,12 +21,17 @@ export default function Balance() {
     setIsStandalone(standalone)
   }, [uuid])
 
-  const { data: balance, isLoading, error } = useQuery({
+  const { data: balance, isLoading, error, refetch, isFetching } = useQuery({
     queryKey: ['balance', uuid],
     queryFn: () => api.getCustomerBalance(uuid!),
     enabled: !!uuid,
-    refetchInterval: 30000, // Refetch every 30 seconds
+    refetchInterval: 10000, // Refetch every 10 seconds
+    staleTime: 0, // Always consider data stale
   })
+
+  const handleRefresh = () => {
+    refetch()
+  }
 
   if (isLoading) {
     return (
@@ -74,7 +79,29 @@ export default function Balance() {
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-white mb-1">BLVQ Balance</h1>
+          <div className="flex items-center justify-center gap-3 mb-1">
+            <h1 className="text-3xl font-bold text-white">BLVQ Balance</h1>
+            <button
+              onClick={handleRefresh}
+              disabled={isFetching}
+              className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition disabled:opacity-50"
+              title="Refresh balance"
+            >
+              <svg
+                className={`w-5 h-5 text-white ${isFetching ? 'animate-spin' : ''}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+              </svg>
+            </button>
+          </div>
           <p className="text-blue-100">Your Credit Information</p>
         </div>
 

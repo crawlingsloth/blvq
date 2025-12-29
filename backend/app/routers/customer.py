@@ -31,8 +31,25 @@ async def get_customer_balance(uuid: str, db: Session = Depends(get_db)):
     link.last_accessed = datetime.utcnow()
     db.commit()
 
-    # Fetch customer data from local database (or Ewity API as fallback)
-    customer_data = await ewity_client.get_customer(link.ewity_customer_id, db)
+    # Fetch FRESH customer data directly from Ewity API (bypass database cache)
+    # This ensures balance is always up-to-date after purchases
+    try:
+        data = await ewity_client._get("/customers", params={"page": 1})
+        customers = data.get("data", [])
+
+        customer_data = None
+        for c in customers:
+            if c.get("id") == link.ewity_customer_id:
+                customer_data = c
+                break
+
+        # If not on first page, check database as fallback
+        if not customer_data:
+            customer_data = await ewity_client.get_customer(link.ewity_customer_id, db)
+    except Exception as e:
+        print(f"Error fetching fresh data: {e}")
+        # Fallback to database
+        customer_data = await ewity_client.get_customer(link.ewity_customer_id, db)
 
     if not customer_data:
         raise HTTPException(
