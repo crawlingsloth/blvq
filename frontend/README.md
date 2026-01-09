@@ -37,3 +37,4 @@ When you push updates, users get the latest version automatically within 60 seco
 ## See Full Documentation
 
 Check the project root for complete setup and deployment guides.
+# Updated to Supabase Functions
