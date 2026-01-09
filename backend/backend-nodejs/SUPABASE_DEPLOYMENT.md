@@ -46,8 +46,8 @@ Set these in your hosting platform:
 ```
 DATABASE_URL=postgresql://postgres.mjntmxvknohuqajulgvt:[PASSWORD]@aws-1-ap-south-1.pooler.supabase.com:6543/postgres
 SUPABASE_URL=https://mjntmxvknohuqajulgvt.supabase.co
-SUPABASE_ANON_KEY=sb_publishable_dCutOk49Cr_Gy4hUxVctdA_DKZx9JiY
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+SUPABASE_ANON_KEY=your-supabase-anon-key-here
+SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key-here
 JWT_SECRET=your-production-secret
 EWITY_API_TOKEN=your-ewity-token
 FRONTEND_URL=https://your-frontend.com
