@@ -150,9 +150,9 @@ export default function AdminDashboard() {
                 <p className="text-gray-600 text-sm">Searching...</p>
               )}
 
-              {searchResults && searchResults.data.length > 0 && (
+              {searchResults && searchResults.customers.length > 0 && (
                 <div className="max-h-64 overflow-y-auto border rounded-lg">
-                  {searchResults.data.map((customer) => {
+                  {searchResults.customers.map((customer) => {
                     const isLinked = linkedCustomers.some(
                       (link) => link.ewity_customer_id === customer.id
                     )
@@ -188,7 +188,7 @@ export default function AdminDashboard() {
 
               {searchQuery.length >= 2 &&
                 searchResults &&
-                searchResults.data.length === 0 && (
+                searchResults.customers.length === 0 && (
                   <p className="text-gray-600 text-sm">No customers found</p>
                 )}
 

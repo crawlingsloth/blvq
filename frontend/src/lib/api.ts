@@ -7,7 +7,7 @@ import type {
   LinkCustomerRequest,
 } from '../types'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://blvq-backend.crawlingsloth.space'
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://mjntmxvknohuqajulgvt.supabase.co/functions/v1'
 
 class ApiClient {
   private getAuthHeader(): Record<string, string> {
@@ -43,7 +43,7 @@ class ApiClient {
 
   // Admin endpoints
   async login(credentials: LoginCredentials): Promise<AuthToken> {
-    const token = await this.request<AuthToken>('/api/admin/login', {
+    const token = await this.request<AuthToken>('/admin-login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     })
@@ -60,11 +60,13 @@ class ApiClient {
   }
 
   async searchCustomers(query: string, page = 1): Promise<{
-    data: EwityCustomer[]
-    pagination: any
+    customers: EwityCustomer[]
+    page: number
+    total_pages: number
+    total_count: number
   }> {
     return this.request(
-      `/api/admin/customers/search?q=${encodeURIComponent(query)}&page=${page}`,
+      `/customer-search?q=${encodeURIComponent(query)}&page=${page}`,
       {
         headers: this.getAuthHeader(),
       }
@@ -75,13 +77,13 @@ class ApiClient {
     data: EwityCustomer[]
     pagination: any
   }> {
-    return this.request(`/api/admin/customers/all?page=${page}`, {
+    return this.request(`/customer-list?page=${page}`, {
       headers: this.getAuthHeader(),
     })
   }
 
   async linkCustomer(data: LinkCustomerRequest): Promise<CustomerLink> {
-    return this.request('/api/admin/customers/link', {
+    return this.request('/customer-link-create', {
       method: 'POST',
       headers: this.getAuthHeader(),
       body: JSON.stringify(data),
@@ -89,13 +91,13 @@ class ApiClient {
   }
 
   async getCustomerLinks(): Promise<CustomerLink[]> {
-    return this.request('/api/admin/customers/links', {
+    return this.request('/customer-links-list', {
       headers: this.getAuthHeader(),
     })
   }
 
   async deleteCustomerLink(uuid: string): Promise<void> {
-    return this.request(`/api/admin/customers/link/${uuid}`, {
+    return this.request(`/customer-link-delete/${uuid}`, {
       method: 'DELETE',
       headers: this.getAuthHeader(),
     })
@@ -108,7 +110,7 @@ class ApiClient {
     updated?: number
     error?: string
   }> {
-    return this.request('/api/admin/customers/refresh', {
+    return this.request('/customer-refresh', {
       method: 'POST',
       headers: this.getAuthHeader(),
     })
@@ -116,11 +118,11 @@ class ApiClient {
 
   // Customer endpoints (public)
   async getCustomerBalance(uuid: string): Promise<CustomerBalance> {
-    return this.request(`/api/customer/${uuid}`)
+    return this.request(`/customer-balance/${uuid}`)
   }
 
   getQRCodeUrl(uuid: string): string {
-    return `${API_BASE_URL}/api/customer/${uuid}/qr`
+    return `${API_BASE_URL}/customer-qr/${uuid}/qr`
   }
 }
 

@@ -46,7 +46,7 @@ export default defineConfig({
         skipWaiting: true,
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/blvq-backend\.crawlingsloth\.space\/api\/.*/i,
+            urlPattern: /^https:\/\/mjntmxvknohuqajulgvt\.supabase\.co\/functions\/v1\/.*/i,
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache',
