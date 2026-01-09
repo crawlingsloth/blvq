@@ -4,7 +4,7 @@
 import requests
 import json
 
-API_TOKEN = "uat_DuVb2afCHOpEAoihxCCnQWGBcWEF"
+API_TOKEN = "YOUR_EWITY_API_TOKEN_HERE"
 BASE_URL = "https://api.ewitypos.com"
 
 headers = {"Authorization": f"Bearer {API_TOKEN}"}

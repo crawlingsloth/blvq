@@ -1,7 +1,7 @@
 # Ewity POS API - Complete Endpoint Discovery Report
 
 **Date:** 2025-12-28
-**API Token:** uat_DuVb2afCHOpEAoihxCCnQWGBcWEF
+**API Token:** YOUR_EWITY_API_TOKEN_HERE
 **Base URL:** https://api.ewitypos.com/v1
 **Authentication:** Bearer Token
 
@@ -243,7 +243,7 @@
 ```python
 import requests
 
-API_TOKEN = "uat_DuVb2afCHOpEAoihxCCnQWGBcWEF"
+API_TOKEN = "YOUR_EWITY_API_TOKEN_HERE"
 BASE_URL = "https://api.ewitypos.com/v1"
 headers = {"Authorization": f"Bearer {API_TOKEN}"}
 
@@ -271,15 +271,15 @@ expenses = response.json()
 ### cURL Example
 ```bash
 # Get customers
-curl -H "Authorization: Bearer uat_DuVb2afCHOpEAoihxCCnQWGBcWEF" \
+curl -H "Authorization: Bearer YOUR_EWITY_API_TOKEN_HERE" \
   https://api.ewitypos.com/v1/customers
 
 # Get users
-curl -H "Authorization: Bearer uat_DuVb2afCHOpEAoihxCCnQWGBcWEF" \
+curl -H "Authorization: Bearer YOUR_EWITY_API_TOKEN_HERE" \
   https://api.ewitypos.com/v1/users
 
 # Get locations
-curl -H "Authorization: Bearer uat_DuVb2afCHOpEAoihxCCnQWGBcWEF" \
+curl -H "Authorization: Bearer YOUR_EWITY_API_TOKEN_HERE" \
   https://api.ewitypos.com/v1/locations
 ```
 

@@ -4,7 +4,7 @@
 import requests
 import json
 
-API_TOKEN = "uat_DuVb2afCHOpEAoihxCCnQWGBcWEF"
+API_TOKEN = "YOUR_EWITY_API_TOKEN_HERE"
 
 print("Quick Ewity API Diagnostic Test")
 print("=" * 80)

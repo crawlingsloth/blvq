@@ -112,7 +112,7 @@ fly launch
 # Set secrets
 fly secrets set DATABASE_URL="your-supabase-connection-string"
 fly secrets set JWT_SECRET="your-secure-secret-key"
-fly secrets set EWITY_API_TOKEN="uat_DuVb2afCHOpEAoihxCCnQWGBcWEF"
+fly secrets set EWITY_API_TOKEN="YOUR_EWITY_API_TOKEN_HERE"
 fly secrets set FRONTEND_URL="https://blvq.crawlingsloth.cloud"
 
 # Deploy

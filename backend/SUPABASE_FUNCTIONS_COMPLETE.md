@@ -62,7 +62,7 @@ This will deploy all 9 functions to your Supabase project.
 
 ```bash
 supabase secrets set JWT_SECRET=your-secret-key-must-be-at-least-32-characters-long-change-this
-supabase secrets set EWITY_API_TOKEN=uat_DuVb2afCHOpEAoihxCCnQWGBcWEF
+supabase secrets set EWITY_API_TOKEN=YOUR_EWITY_API_TOKEN_HERE
 supabase secrets set EWITY_API_BASE_URL=https://api.ewitypos.com/v1
 supabase secrets set FRONTEND_URL=https://blvq.crawlingsloth.cloud
 ```

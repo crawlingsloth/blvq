@@ -9,7 +9,7 @@ import json
 from typing import Dict, List, Tuple
 
 # Your UAT token
-API_TOKEN = "uat_DuVb2afCHOpEAoihxCCnQWGBcWEF"
+API_TOKEN = "YOUR_EWITY_API_TOKEN_HERE"
 
 # Possible base URLs to test
 BASE_URLS = [
